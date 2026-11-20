@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Activity Uniform Sizes</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="uniform.css">
+	<link rel="icon" type="text/css" href="favicon.ico">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300&family=Montserrat&family=Sacramento&display=swap" rel="stylesheet">
+</head>
+<body>
+	<header class="form-header">
+		<h1>Activity Uniform Sizes</h1>
+		<p>Please complete one form per student so we can order the right sizes.</p>
+	</header>
+
+	<main class="form-wrap">
+		<form id="uniform-form" novalidate>
+			<fieldset>
+				<legend>Student</legend>
+				<label>First name <input name="first_name" required autocomplete="off"></label>
+				<label>Last name <input name="last_name" required autocomplete="off"></label>
+				<label>Grade / Class <input name="grade" required placeholder="e.g. Grade 5 / 5B"></label>
+				<label>Gender (for cut / fit)
+					<select name="fit" required>
+						<option value="">Select…</option>
+						<option>Boys</option>
+						<option>Girls</option>
+						<option>Unisex</option>
+					</select>
+				</label>
+			</fieldset>
+
+			<fieldset>
+				<legend>Activity</legend>
+				<p class="hint">Select all activities the student takes part in.</p>
+				<div class="checks">
+					<label><input type="checkbox" name="activity" value="Football"> Football</label>
+					<label><input type="checkbox" name="activity" value="Basketball"> Basketball</label>
+					<label><input type="checkbox" name="activity" value="Swimming"> Swimming</label>
+					<label><input type="checkbox" name="activity" value="Athletics"> Athletics</label>
+					<label><input type="checkbox" name="activity" value="Band / Music"> Band / Music</label>
+					<label><input type="checkbox" name="activity" value="Drama"> Drama</label>
+					<label><input type="checkbox" name="activity" value="Other"> Other</label>
+				</div>
+				<label>If other, please specify <input name="activity_other"></label>
+				<span class="error" data-for="activity"></span>
+			</fieldset>
+
+			<fieldset>
+				<legend>Sizes</legend>
+				<label>T-shirt / jersey
+					<select name="shirt_size" required>
+						<option value="">Select…</option>
+						<option>Youth XS</option><option>Youth S</option><option>Youth M</option>
+						<option>Youth L</option><option>Youth XL</option>
+						<option>Adult XS</option><option>Adult S</option><option>Adult M</option>
+						<option>Adult L</option><option>Adult XL</option><option>Adult XXL</option>
+					</select>
+				</label>
+				<label>Shorts / pants
+					<select name="bottom_size" required>
+						<option value="">Select…</option>
+						<option>Youth XS</option><option>Youth S</option><option>Youth M</option>
+						<option>Youth L</option><option>Youth XL</option>
+						<option>Adult XS</option><option>Adult S</option><option>Adult M</option>
+						<option>Adult L</option><option>Adult XL</option><option>Adult XXL</option>
+					</select>
+				</label>
+				<label>Jacket / hoodie (optional)
+					<select name="jacket_size">
+						<option value="">Not needed</option>
+						<option>Youth S</option><option>Youth M</option><option>Youth L</option>
+						<option>Adult S</option><option>Adult M</option><option>Adult L</option>
+						<option>Adult XL</option>
+					</select>
+				</label>
+				<label>Shoe size (optional) <input name="shoe_size" placeholder="e.g. EU 38 / US 6"></label>
+				<label>Height in cm (optional) <input name="height_cm" type="number" min="50" max="250"></label>
+				<label>Notes (e.g. between sizes, preferred fit)
+					<textarea name="notes" rows="3"></textarea>
+				</label>
+			</fieldset>
+
+			<fieldset>
+				<legend>Parent / Guardian</legend>
+				<label>Name <input name="guardian_name" required></label>
+				<label>Email <input name="guardian_email" type="email" required></label>
+				<label>Phone (optional) <input name="guardian_phone" type="tel"></label>
+			</fieldset>
+
+			<button type="submit" class="contact submit-btn">SUBMIT</button>
+			<p id="status" role="status" aria-live="polite"></p>
+		</form>
+	</main>
+
+	<script src="uniform.js"></script>
+</body>
+</html>
