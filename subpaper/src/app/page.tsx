@@ -17,8 +17,12 @@ export default function Dashboard() {
     }
     setDocs(await res.json());
   }
+  const [address, setAddress] = useState<string | null>(null);
   useEffect(() => {
     load();
+    fetch("/api/inbound-address")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => setAddress(j?.address ?? null));
   }, []);
 
   async function upload(file: File) {
@@ -44,6 +48,12 @@ export default function Dashboard() {
         <button onClick={logout}>Sign out</button>
       </div>
       <p>Upload a certificate of insurance. We extract it and check it against your requirements.</p>
+      {address && (
+        <p>
+          Or forward certificates to <code>{address}</code>{" "}
+          <button onClick={() => navigator.clipboard.writeText(address)}>Copy</button>
+        </p>
+      )}
       <input
         type="file"
         accept="application/pdf,image/png,image/jpeg"
@@ -59,6 +69,7 @@ export default function Dashboard() {
         >
           <strong>{d.filename}</strong> · {d.extraction.holderName ?? "Unknown holder"} · expires{" "}
           {d.extraction.expirationDate ?? "?"}
+          {d.source === "email" && <span style={{ color: "#666" }}> · via email from {d.sender}</span>}
           <div style={{ color: COLORS[d.status], fontWeight: 600 }}>{d.status.replace("_", " ")}</div>
           <ul>
             {d.issues.map((i) => (

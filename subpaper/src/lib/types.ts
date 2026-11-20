@@ -8,4 +8,6 @@ export interface StoredDoc {
   extraction: Extraction;
   issues: Issue[];
   status: Status;
+  source: "upload" | "email";
+  sender: string | null;
 }

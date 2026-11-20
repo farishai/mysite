@@ -28,7 +28,18 @@ DATABASE_URL=postgres://... npm test               # also runs auth + tenant-iso
 - `src/middleware.ts` — redirects to `/login` when there is no session cookie; real checks are `requireUser()` in API routes.
 - Upload flow: `src/app/api/documents/route.ts` → `extract.ts` (Claude) → `rules.ts` (pure checks) → stored in Postgres.
 
+## Email-in
+
+Each company has an unguessable address `<token>@INBOUND_DOMAIN`, shown on the dashboard. Forwarded PDF/PNG/JPEG
+attachments are checked exactly like uploads and appear tagged "via email".
+
+Setup (Postmark): add an inbound domain (MX to Postmark), then set the inbound webhook URL to
+`https://user:<INBOUND_WEBHOOK_SECRET>@your-host/api/inbound/postmark` (Basic auth; any username).
+The endpoint acknowledges immediately and processes after responding; retries are safe because each email is
+recorded once per company by `MessageID` (`inbound_messages`). Limits: 10 attachments per email, 10MB each;
+other file types (logos, signatures) are skipped. Mail to an unknown address is dropped.
+
 ## Not done yet
 
-Login rate limiting, email verification and password reset, multiple users per company, email-in ingestion,
+Reply emails to the sender with results, a per-company daily cap on extractions, login rate limiting, email verification and password reset, multiple users per company, email-in ingestion,
 expiry reminders, W-9 and lien-waiver rules, Stripe, file storage (originals are not kept; only extracted data).
