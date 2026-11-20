@@ -2,6 +2,7 @@ import { withOrg } from "./db";
 import { extractDocument } from "./extract";
 import { checkCoi, statusOf } from "./rules";
 import { RequirementsSchema, type Extraction } from "./schema";
+import { CapExceededError, extractionCap, reserve } from "./usage";
 
 export type MediaType = "application/pdf" | "image/png" | "image/jpeg";
 export const MEDIA_TYPES: readonly MediaType[] = ["application/pdf", "image/png", "image/jpeg"];
@@ -22,6 +23,10 @@ export interface IngestInput {
 
 /** Extract a document, check it against the org's requirements, and store it. */
 export async function ingestFile(input: IngestInput) {
+  // Spend a unit of today's budget before the paid model call. Failed extractions still count: they cost money.
+  const cap = await extractionCap(input.orgId);
+  if (!(await reserve(input.orgId, "extractions", cap))) throw new CapExceededError(cap);
+
   const extraction = await (input.extract ?? extractDocument)(input.data, input.mediaType);
   return withOrg(input.orgId, async (c) => {
     const cfg = (await c.query("select config from requirements where org_id = $1", [input.orgId])).rows[0]?.config;

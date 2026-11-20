@@ -78,14 +78,14 @@ describe.skipIf(!process.env.DATABASE_URL)("processInbound (postgres)", () => {
 
   it("stores supported attachments, skips others, and is idempotent", async () => {
     const p = parsePostmark(payload(token, { MessageID: "fixed-id" }))!;
-    const r = await processInbound(p, stub);
+    const r = await processInbound(p, { extract: stub });
     expect(r).toMatchObject({ result: "processed", status: "done", processed: 2 });
 
     const docs = await withOrg(orgId, async (c) => (await c.query("select source, sender, status from documents")).rows);
     expect(docs).toHaveLength(2);
     expect(docs[0]).toMatchObject({ source: "email", sender: "sparky@example.com", status: "compliant" });
 
-    expect(await processInbound(p, stub)).toEqual({ result: "duplicate" });
+    expect(await processInbound(p, { extract: stub })).toEqual({ result: "duplicate" });
     expect(await withOrg(orgId, async (c) => (await c.query("select 1 from documents")).rowCount)).toBe(2);
   });
 
@@ -95,16 +95,16 @@ describe.skipIf(!process.env.DATABASE_URL)("processInbound (postgres)", () => {
       if (n++ === 0) throw new Error("model error");
       return goodExtraction;
     };
-    const r = await processInbound(parsePostmark(payload(token))!, flaky);
+    const r = await processInbound(parsePostmark(payload(token))!, { extract: flaky });
     expect(r).toMatchObject({ result: "processed", status: "partial", processed: 1 });
   });
 
   it("ignores mail to unknown or ambiguous recipients", async () => {
-    expect(await processInbound(parsePostmark(payload("doesnotexist"))!, stub)).toEqual({ result: "unknown_recipient" });
+    expect(await processInbound(parsePostmark(payload("doesnotexist"))!, { extract: stub })).toEqual({ result: "unknown_recipient" });
   });
 
   it("marks emails without usable attachments as empty", async () => {
-    const r = await processInbound(parsePostmark(payload(token, { Attachments: [] }))!, stub);
+    const r = await processInbound(parsePostmark(payload(token, { Attachments: [] }))!, { extract: stub });
     expect(r).toMatchObject({ status: "empty", processed: 0 });
   });
 });

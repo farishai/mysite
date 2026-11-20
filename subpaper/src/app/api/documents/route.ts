@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { withOrg } from "../../../lib/db";
 import { ingestFile, MAX_FILE_BYTES, MEDIA_TYPES } from "../../../lib/ingest";
 import { requireUser } from "../../../lib/session";
+import { CapExceededError } from "../../../lib/usage";
 
 export async function GET() {
   const u = await requireUser();
@@ -39,6 +40,7 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(doc, { status: 201 });
   } catch (e) {
+    if (e instanceof CapExceededError) return NextResponse.json({ error: e.message }, { status: 429 });
     return NextResponse.json({ error: (e as Error).message }, { status: 502 });
   }
 }

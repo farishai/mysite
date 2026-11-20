@@ -39,7 +39,19 @@ The endpoint acknowledges immediately and processes after responding; retries ar
 recorded once per company by `MessageID` (`inbound_messages`). Limits: 10 attachments per email, 10MB each;
 other file types (logos, signatures) are skipped. Mail to an unknown address is dropped.
 
+## Daily caps and reply emails
+
+- **Extraction cap:** each company may run `DAILY_EXTRACTION_CAP` (default 100) extractions per UTC day, counted
+  atomically in `usage_daily` before every model call (uploads and email alike; failed extractions still count).
+  Override per company with `update orgs set daily_extraction_cap = N where id = ...`. Uploads over the cap get HTTP 429;
+  emailed attachments over the cap are skipped and the reply says so.
+- **Replies:** after processing an email we send the sender a plain-text summary through Postmark
+  (`POSTMARK_SERVER_TOKEN`, `MAIL_FROM`; unset means no replies). Safeguards: reply only if the receiving server
+  reported SPF `pass` (From is forgeable; `INBOUND_REQUIRE_SPF=false` disables the check), never answer automated mail
+  (`Auto-Submitted`, `Precedence: bulk`, `List-Id`, no-reply senders), at most `DAILY_REPLY_CAP` (default 50) per company
+  per day, and replies carry `Auto-Submitted: auto-replied`. A failed reply never fails the ingestion.
+
 ## Not done yet
 
-Reply emails to the sender with results, a per-company daily cap on extractions, login rate limiting, email verification and password reset, multiple users per company,
+Login rate limiting, email verification and password reset, multiple users per company,
 expiry reminders, W-9 and lien-waiver rules, Stripe, file storage (originals are not kept; only extracted data).
