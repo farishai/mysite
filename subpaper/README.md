@@ -41,5 +41,5 @@ other file types (logos, signatures) are skipped. Mail to an unknown address is 
 
 ## Not done yet
 
-Reply emails to the sender with results, a per-company daily cap on extractions, login rate limiting, email verification and password reset, multiple users per company, email-in ingestion,
+Reply emails to the sender with results, a per-company daily cap on extractions, login rate limiting, email verification and password reset, multiple users per company,
 expiry reminders, W-9 and lien-waiver rules, Stripe, file storage (originals are not kept; only extracted data).
